@@ -43,6 +43,17 @@ const metricTips = {
   Tsunami: "Hidden-wave precursor score. High values mean compression, retrieval, rhythm, and ignition are aligning.",
 };
 
+const metricIcons = {
+  Current: '<path d="M22 12h-4l-3 8L9 4l-3 8H2"></path>',
+  Target: '<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle>',
+  Expected: '<path d="M3 17 9 11l4 4 8-8"></path><path d="M14 7h7v7"></path>',
+  Confidence: '<path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z"></path><path d="m9 12 2 2 4-4"></path>',
+  Composite: '<path d="m12 2 9 5-9 5-9-5 9-5Z"></path><path d="m3 12 9 5 9-5"></path><path d="m3 17 9 5 9-5"></path>',
+  Risk: '<path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z"></path>',
+  Physics: '<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1"></path>',
+  Tsunami: '<path d="M3 17c3-5 6-5 9 0s6 5 9 0"></path><path d="M3 12c3-5 6-5 9 0s6 5 9 0"></path><path d="M12 3v4"></path><path d="m9 6 3-3 3 3"></path>',
+};
+
 const scoreTargets = {
   wave: [document.querySelector("#waveScore"), document.querySelector("#waveBar"), document.querySelector("#waveDetails")],
   physics: [document.querySelector("#physicsScore"), document.querySelector("#physicsBar"), document.querySelector("#physicsDetails")],
@@ -166,11 +177,20 @@ function infoDotElement(text) {
   return element;
 }
 
+function metricIconElement(label) {
+  if (!metricIcons[label]) return null;
+  const template = document.createElement("template");
+  template.innerHTML = `<svg class="lucide-icon metric-icon" aria-hidden="true" viewBox="0 0 24 24">${metricIcons[label]}</svg>`;
+  return template.content.firstElementChild;
+}
+
 function metric(label, value, sub = "", tone = "neutral") {
   const element = document.createElement("div");
   element.className = `metric ${tone}`;
   const labelNode = document.createElement("span");
-  labelNode.textContent = label;
+  const iconNode = metricIconElement(label);
+  if (iconNode) labelNode.appendChild(iconNode);
+  labelNode.appendChild(document.createTextNode(label));
   if (metricTips[label]) labelNode.appendChild(infoDotElement(metricTips[label]));
   const valueNode = document.createElement("strong");
   valueNode.textContent = value;

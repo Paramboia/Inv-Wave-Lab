@@ -89,13 +89,22 @@
           </div>
         </a>
         <nav class="topbar-nav" aria-label="Primary navigation">
-          <a href="#terminal">Terminal</a>
-          <a href="#validation">Backtest</a>
-          <a href="#risk">Risk Stack</a>
-          <a href="/about-us">About</a>
+          <a href="#terminal">
+            <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6"></path><path d="M12 19h8"></path></svg>
+            <span>Terminal</span>
+          </a>
+          <a href="#validation">
+            <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+            <span>Backtest</span>
+          </a>
+          <a href="#risk">
+            <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z"></path></svg>
+            <span>Risk Stack</span>
+          </a>
         </nav>
         <div class="topbar-actions">
           <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+            <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 7.4A9 9 0 1 1 12 3Z"></path></svg>
             <span>Theme</span>
             <strong data-theme-label>Dark</strong>
           </button>
@@ -141,7 +150,10 @@
           <div class="instrument-bar">
             <div>
               <p id="instrumentMeta" class="eyebrow">No instrument loaded</p>
-              <h2 id="instrumentName">Paste a ticker</h2>
+              <h2 class="title-with-icon">
+                <span class="title-icon" aria-hidden="true"><svg class="lucide-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 8L9 4l-3 8H2"></path></svg></span>
+                <span id="instrumentName">Paste a ticker</span>
+              </h2>
             </div>
             <div class="posture-pill" id="posturePill">Watch</div>
           </div>
@@ -153,7 +165,10 @@
                   Buying opportunity
                   <span class="info-dot" tabindex="0" data-tip="Decision layer built from expected return, confidence, composite score, risk, macro weather, and wave-physics formation. It is model guidance, not certainty.">i</span>
                 </p>
-                <h3 id="buyAction">Run analysis</h3>
+                <h3 class="title-with-icon">
+                  <span class="title-icon" aria-hidden="true"><svg class="lucide-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></span>
+                  <span id="buyAction">Run analysis</span>
+                </h3>
               </div>
               <div class="setup-gauge">
                 <span>Setup</span>
@@ -170,6 +185,7 @@
               <div>
                 <p class="section-label">Wave physics</p>
                 <h3>
+                  <span class="title-icon" aria-hidden="true"><svg class="lucide-icon" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1"></path><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1"></path></svg></span>
                   Formation surface
                   <span class="info-dot" tabindex="0" data-tip="A 3D view of price waves, spectral rhythm, stored energy, and physics risk. Higher ridges mean stronger formation energy.">i</span>
                 </h3>
@@ -190,6 +206,7 @@
               <div>
                 <p class="section-label">Price wave</p>
                 <h3>
+                  <span class="title-icon" aria-hidden="true"><svg class="lucide-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg></span>
                   History and forecast cone
                   <span class="info-dot" tabindex="0" data-tip="The flat price chart shows recent adjusted close history and a probabilistic forecast cone for the selected horizon.">i</span>
                 </h3>
@@ -269,7 +286,10 @@
             <div class="section-header">
               <div>
                 <p class="section-label">Backtest</p>
-                <h3>Predicted vs realized returns</h3>
+                <h3>
+                  <span class="title-icon" aria-hidden="true"><svg class="lucide-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></span>
+                  Predicted vs realized returns
+                </h3>
               </div>
               <div id="backtestSummary" class="summary-strip"></div>
             </div>
@@ -286,11 +306,14 @@
           <p>Experimental wave-physics stock research terminal. Model output is research context, not financial advice.</p>
         </div>
         <nav aria-label="Footer navigation">
-          <a href="/help">Help</a>
-          <a href="/about-us">About</a>
-          <a href="#terminal">Terminal</a>
-          <a href="#validation">Backtest</a>
-          <a href="https://github.com/Paramboia/Inv-Wave-Lab" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="/about-us">
+            <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+            <span>About</span>
+          </a>
+          <a href="/help">
+            <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"></path></svg>
+            <span>Help</span>
+          </a>
         </nav>
       </footer>
     </div>
@@ -313,12 +336,22 @@
     </aside>
 
     <nav class="mobile-bottom-nav" aria-label="Mobile quick actions">
-      <button id="mobileAnalyzeButton" type="button">Analyze</button>
-      <button id="mobileBacktestButton" type="button">Backtest</button>
-      <a href="/help">Help</a>
-      <button class="theme-toggle compact" type="button" data-theme-toggle aria-label="Toggle color theme">
-        <span data-theme-label>Dark</span>
+      <button id="mobileAnalyzeButton" type="button" aria-label="Analyze ticker">
+        <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M22 12h-4l-3 8L9 4l-3 8H2"></path></svg>
+        <span>Analyze</span>
       </button>
+      <button id="mobileBacktestButton" type="button" aria-label="Run backtest">
+        <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+        <span>Backtest</span>
+      </button>
+      <a href="#risk" aria-label="Jump to risk stack">
+        <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z"></path></svg>
+        <span>Risk</span>
+      </a>
+      <a href="/help" aria-label="Open help">
+        <svg class="lucide-icon nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"></path></svg>
+        <span>Help</span>
+      </a>
     </nav>
 
     <script type="module" src="/theme.js"></script>
