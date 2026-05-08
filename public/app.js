@@ -8,8 +8,6 @@ const trainingInput = document.querySelector("#trainingInput");
 const stepInput = document.querySelector("#stepInput");
 const analyzeButton = document.querySelector("#analyzeButton");
 const backtestButton = document.querySelector("#backtestButton");
-const mobileAnalyzeButton = document.querySelector("#mobileAnalyzeButton");
-const mobileBacktestButton = document.querySelector("#mobileBacktestButton");
 const statusDot = document.querySelector("#statusDot");
 const systemStatus = document.querySelector("#systemStatus");
 const instrumentMeta = document.querySelector("#instrumentMeta");
@@ -73,8 +71,6 @@ function setStatus(message, state = "idle") {
 function setActionButtonsDisabled(disabled) {
   analyzeButton.disabled = disabled;
   backtestButton.disabled = disabled;
-  if (mobileAnalyzeButton) mobileAnalyzeButton.disabled = disabled;
-  if (mobileBacktestButton) mobileBacktestButton.disabled = disabled;
 }
 
 function cssVar(name, fallback) {
@@ -1208,8 +1204,6 @@ form.addEventListener("submit", (event) => {
 });
 
 backtestButton.addEventListener("click", runValidation);
-mobileAnalyzeButton?.addEventListener("click", () => form.requestSubmit());
-mobileBacktestButton?.addEventListener("click", runValidation);
 
 window.addEventListener("resize", refreshVisuals);
 window.addEventListener("inv-wave-theme-change", refreshVisuals);
