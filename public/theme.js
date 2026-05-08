@@ -43,7 +43,19 @@ function toggleTheme() {
   applyTheme(root.dataset.theme === "light" ? "dark" : "light", true);
 }
 
+function syncMobileBottomNav() {
+  if (!document.querySelector(".mobile-bottom-nav")) return;
+  const viewport = window.visualViewport;
+  let bottomOffset = 8;
+  if (viewport) {
+    const hiddenBottom = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+    bottomOffset += hiddenBottom;
+  }
+  root.style.setProperty("--mobile-nav-bottom", `calc(${Math.round(bottomOffset)}px + env(safe-area-inset-bottom, 0px))`);
+}
+
 applyTheme(readTheme());
+syncMobileBottomNav();
 
 document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
   button.addEventListener("click", toggleTheme);
@@ -57,3 +69,8 @@ window.matchMedia?.("(prefers-color-scheme: light)").addEventListener?.("change"
   }
   applyTheme(systemTheme());
 });
+
+window.addEventListener("resize", syncMobileBottomNav);
+window.addEventListener("orientationchange", syncMobileBottomNav);
+window.visualViewport?.addEventListener("resize", syncMobileBottomNav);
+window.visualViewport?.addEventListener("scroll", syncMobileBottomNav);
