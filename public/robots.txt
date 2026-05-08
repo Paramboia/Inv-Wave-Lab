@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://inv-wave-lab.vercel.app/sitemap.xml
+Sitemap: https://invwavelab.com/sitemap.xml

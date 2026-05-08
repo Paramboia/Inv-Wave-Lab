@@ -2,7 +2,7 @@
 
 Open-source experimental stock research terminal that maps market behavior through quantitative wave layers, wave-formation physics, fundamentals, sector context, macro weather, risk, forecasts, and backtesting.
 
-Live app: https://inv-wave-lab.vercel.app/
+Live app: https://invwavelab.com/
 Repository: https://github.com/Paramboia/Inv-Wave-Lab
 
 ## What It Does
