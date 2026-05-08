@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inv-Wave Lab Help</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell help-app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Operator guide</p>
+          <h1>Inv-Wave Lab <span>Help Console</span></h1>
+        </div>
+        <div class="topbar-actions">
+          <a class="ghost-link" href="/">Terminal</a>
+        </div>
+      </header>
+
+      <main class="help-shell">
+        <section class="help-hero">
+          <div>
+            <p class="eyebrow">How to read the model</p>
+            <h2>From ticker to wave thesis</h2>
+            <p>
+              Inv-Wave blends price waves, nature-inspired formation physics, company shape, market coast, macro weather,
+              and risk into a decision layer. Treat it as a research cockpit: it gives a structured setup, levels, and
+              validation evidence, not certainty.
+            </p>
+          </div>
+          <div class="help-status-grid">
+            <div><span>Green</span><strong>Constructive</strong></div>
+            <div><span>Red</span><strong>Defensive</strong></div>
+            <div><span>White</span><strong>Neutral</strong></div>
+          </div>
+        </section>
+
+        <nav class="help-nav" aria-label="Help sections">
+          <a href="#workflow">Workflow</a>
+          <a href="#decision">Buy Guidance</a>
+          <a href="#layers">Model Layers</a>
+          <a href="#surface">3D Surface</a>
+          <a href="#backtest">Backtest</a>
+          <a href="#limits">Limits</a>
+        </nav>
+
+        <section id="workflow" class="help-section">
+          <div class="section-header">
+            <div>
+              <p class="section-label">Workflow</p>
+              <h3>Run a clean analysis loop</h3>
+            </div>
+          </div>
+          <div class="workflow-steps">
+            <article>
+              <span>01</span>
+              <h4>Enter a ticker</h4>
+              <p>Use liquid symbols first. Start with five years of history to give cycles and macro proxies enough room.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h4>Pick a horizon</h4>
+              <p>The default 30 trading days is a swing horizon. Shorter horizons emphasize wave state; longer horizons emphasize drift and volatility.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h4>Read the buying panel</h4>
+              <p>Use the action, setup score, target, pullback, breakout, invalidation, data reliability, and reasons before reading secondary scores.</p>
+            </article>
+            <article>
+              <span>04</span>
+              <h4>Validate</h4>
+              <p>Run the backtest, then compare directional accuracy, information coefficient, error, interval hits, and hidden-wave hit rate.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="decision" class="help-section">
+          <div class="section-header">
+            <div>
+              <p class="section-label">Buy guidance</p>
+              <h3>What the decision layer means</h3>
+            </div>
+          </div>
+          <div class="help-grid two">
+            <article class="help-card positive">
+              <h4>Buyable now</h4>
+              <p>Forecast, setup score, risk, and formation physics are aligned enough for the model to support current-price exposure.</p>
+            </article>
+            <article class="help-card positive">
+              <h4>Starter / confirmation</h4>
+              <p>The setup is constructive but not dominant. The model prefers smaller sizing or waiting for breakout confirmation.</p>
+            </article>
+            <article class="help-card neutral">
+              <h4>Wait for pullback</h4>
+              <p>The thesis is constructive, but the current wave is extended. Pullback entry is the cleaner modeled risk point.</p>
+            </article>
+            <article class="help-card neutral">
+              <h4>Hidden-wave watch</h4>
+              <p>The physics layer detects stored energy or precursor rhythm, but confirmation from price, macro, or risk is incomplete.</p>
+            </article>
+            <article class="help-card neutral">
+              <h4>Watchlist only</h4>
+              <p>No decisive edge. The model is saying the stock may be interesting, but not actionable yet.</p>
+            </article>
+            <article class="help-card negative">
+              <h4>Avoid / reduce</h4>
+              <p>Downside pressure, risk, or poor composite quality dominates. This is a defensive posture, not a buy signal.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="layers" class="help-section">
+          <div class="section-header">
+            <div>
+              <p class="section-label">Model layers</p>
+              <h3>The wave analogy as math</h3>
+            </div>
+          </div>
+          <div class="signal-table">
+            <div><strong>Wave</strong><span>Price heartbeat: trend, dominant cycle, frequency, repetition, RSI, ATR, and break risk.</span></div>
+            <div><strong>Physics</strong><span>Formation mechanics: rhythm, bandwidth, steepness, stored energy, instability, source/sink flux, and hidden-wave setup.</span></div>
+            <div><strong>Shape</strong><span>Company fundamentals: valuation, growth, profitability, balance-sheet quality, and data confidence when available.</span></div>
+            <div><strong>Coast</strong><span>The domain the wave breaks against: sector, industry, beta, cyclicality, rate sensitivity, innovation, defensiveness, and moat priors.</span></div>
+            <div><strong>Weather</strong><span>Macro regime proxy: SPY/QQQ momentum, VIX, rates, commodities, and market beta pressure.</span></div>
+            <div><strong>Risk</strong><span>Volatility, drawdown, downside deviation, CVaR, beta shock, classical break risk, and physics break stress.</span></div>
+          </div>
+        </section>
+
+        <section id="surface" class="help-section">
+          <div class="section-header">
+            <div>
+              <p class="section-label">3D surface</p>
+              <h3>Reading the formation map</h3>
+            </div>
+          </div>
+          <div class="help-grid three">
+            <article class="help-card">
+              <h4>Ridges</h4>
+              <p>High ridges represent stronger formation energy from price normalization, rhythm, stored energy, and wave concentration.</p>
+            </article>
+            <article class="help-card">
+              <h4>Color</h4>
+              <p>Cyan leans toward organized energy, amber toward stored/ignition energy, and magenta toward break stress.</p>
+            </article>
+            <article class="help-card">
+              <h4>Interaction</h4>
+              <p>Drag the surface to inspect structure. It does not auto-spin, so visual motion does not imply market motion.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="backtest" class="help-section">
+          <div class="section-header">
+            <div>
+              <p class="section-label">Validation</p>
+              <h3>Backtest readout</h3>
+            </div>
+          </div>
+          <div class="signal-table compact-table">
+            <div><strong>N</strong><span>Number of historical forecast windows tested.</span></div>
+            <div><strong>Dir</strong><span>Directional accuracy: whether predicted and realized return direction matched.</span></div>
+            <div><strong>IC</strong><span>Information coefficient: correlation between predicted and realized returns. Positive is better.</span></div>
+            <div><strong>MAE</strong><span>Mean absolute error between modeled and realized return. Lower is better.</span></div>
+            <div><strong>68 hit</strong><span>How often realized price landed inside the model's 68 percent interval.</span></div>
+            <div><strong>Tsu</strong><span>Hidden-wave setup count and hit rate for the tsunami-style precursor layer.</span></div>
+            <div><strong>No lookahead</strong><span>Historical validation excludes current fundamentals unless explicitly enabled in code.</span></div>
+            <div><strong>Overlap</strong><span>Appears when validation windows share trading days, so samples are not independent.</span></div>
+          </div>
+        </section>
+
+        <section id="limits" class="help-section">
+          <div class="section-header">
+            <div>
+              <p class="section-label">Limits</p>
+              <h3>Use it like a research instrument</h3>
+            </div>
+          </div>
+          <div class="help-callout">
+            <p>
+              This is experimental quantitative research software. It can miss regime shifts, bad data, news shocks,
+              liquidity events, and structural breaks. Do not treat outputs as personalized financial advice. The useful
+              habit is iteration: analyze, backtest, compare, refine thresholds, and keep position sizing outside the model.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

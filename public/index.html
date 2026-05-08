@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inv-Wave Lab</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Research terminal</p>
+          <h1>Inv-Wave Lab <span>Wave Physics Terminal</span></h1>
+        </div>
+        <div class="topbar-actions">
+          <a class="ghost-link" href="/help.html">Help</a>
+          <div class="system-strip">
+            <span id="statusDot" class="status-dot"></span>
+            <span id="systemStatus">Idle</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="control-rail">
+          <form id="analysisForm" class="control-form">
+            <label for="tickerInput">Ticker</label>
+            <input id="tickerInput" name="ticker" value="AAPL" autocomplete="off" spellcheck="false" required />
+
+            <label for="rangeSelect">History</label>
+            <select id="rangeSelect" name="range">
+              <option value="1y">1 year</option>
+              <option value="2y">2 years</option>
+              <option value="5y" selected>5 years</option>
+              <option value="10y">10 years</option>
+              <option value="max">Max</option>
+            </select>
+
+            <label for="horizonInput">Horizon days</label>
+            <input id="horizonInput" name="horizon" type="number" min="5" max="252" step="1" value="30" />
+
+            <button id="analyzeButton" type="submit">Analyze</button>
+          </form>
+
+          <div class="rail-section">
+            <p class="section-label">Validation</p>
+            <label for="trainingInput">Training days</label>
+            <input id="trainingInput" type="number" min="126" max="1260" step="21" value="504" />
+            <label for="stepInput">Step days</label>
+            <input id="stepInput" type="number" min="5" max="126" step="1" value="30" />
+            <button id="backtestButton" type="button">Run Backtest</button>
+          </div>
+        </aside>
+
+        <section class="terminal">
+          <div class="instrument-bar">
+            <div>
+              <p id="instrumentMeta" class="eyebrow">No instrument loaded</p>
+              <h2 id="instrumentName">Paste a ticker</h2>
+            </div>
+            <div class="posture-pill" id="posturePill">Watch</div>
+          </div>
+
+          <section class="buy-panel neutral" id="buyPanel">
+            <div class="buy-head">
+              <div>
+                <p class="section-label">
+                  Buying opportunity
+                  <span class="info-dot" tabindex="0" data-tip="Decision layer built from expected return, confidence, composite score, risk, macro weather, and wave-physics formation. It is model guidance, not certainty.">i</span>
+                </p>
+                <h3 id="buyAction">Run analysis</h3>
+              </div>
+              <div class="setup-gauge">
+                <span>Setup</span>
+                <strong id="buySetupScore">--</strong>
+              </div>
+            </div>
+            <p id="buySummary" class="buy-summary">The terminal will classify the setup after a ticker is analyzed.</p>
+            <div class="buy-levels" id="buyLevels"></div>
+            <ul class="buy-reasons" id="buyReasons"></ul>
+          </section>
+
+          <section class="chart-section physics-stage">
+            <div class="section-header">
+              <div>
+                <p class="section-label">Wave physics</p>
+                <h3>
+                  Formation surface
+                  <span class="info-dot" tabindex="0" data-tip="A 3D view of price waves, spectral rhythm, stored energy, and physics risk. Higher ridges mean stronger formation energy.">i</span>
+                </h3>
+              </div>
+              <div class="legend">
+                <span><i class="legend-energy"></i> Energy ridge</span>
+                <span><i class="legend-risk"></i> Break stress</span>
+                <span><i class="legend-forecast"></i> Direction bias</span>
+              </div>
+            </div>
+            <div id="waveScene" class="wave-scene" aria-label="3D wave formation surface"></div>
+          </section>
+
+          <section class="metric-grid" id="metricGrid"></section>
+
+          <section class="chart-section">
+            <div class="section-header">
+              <div>
+                <p class="section-label">Price wave</p>
+                <h3>
+                  History and forecast cone
+                  <span class="info-dot" tabindex="0" data-tip="The flat price chart shows recent adjusted close history and a probabilistic forecast cone for the selected horizon.">i</span>
+                </h3>
+              </div>
+              <div class="legend">
+                <span><i class="legend-price"></i> Price</span>
+                <span><i class="legend-forecast"></i> Forecast</span>
+                <span><i class="legend-band"></i> 68 percent band</span>
+              </div>
+            </div>
+            <canvas id="priceCanvas" width="1200" height="520"></canvas>
+          </section>
+
+          <div class="score-grid">
+            <section class="score-panel">
+              <div class="section-header compact">
+                <p class="section-label">
+                  Wave
+                  <span class="info-dot" tabindex="0" data-tip="Classical price-wave layer: trend, momentum, dominant cycle, repetition, RSI, ATR expansion, and break risk.">i</span>
+                </p>
+                <strong id="waveScore">--</strong>
+              </div>
+              <div class="score-bar"><span id="waveBar"></span></div>
+              <dl id="waveDetails"></dl>
+            </section>
+
+            <section class="score-panel">
+              <div class="section-header compact">
+                <p class="section-label">
+                  Physics
+                  <span class="info-dot" tabindex="0" data-tip="Nature-inspired layer: spectral bandwidth, peak enhancement, steepness, instability, shoaling, source/sink energy, and tsunami precursor score.">i</span>
+                </p>
+                <strong id="physicsScore">--</strong>
+              </div>
+              <div class="score-bar"><span id="physicsBar"></span></div>
+              <dl id="physicsDetails"></dl>
+            </section>
+
+            <section class="score-panel">
+              <div class="section-header compact">
+                <p class="section-label">
+                  Shape
+                  <span class="info-dot" tabindex="0" data-tip="Company fundamentals when available: valuation, growth, profitability, balance-sheet quality, and dividend yield.">i</span>
+                </p>
+                <strong id="shapeScore">--</strong>
+              </div>
+              <div class="score-bar"><span id="shapeBar"></span></div>
+              <dl id="shapeDetails"></dl>
+            </section>
+
+            <section class="score-panel">
+              <div class="section-header compact">
+                <p class="section-label">
+                  Coast
+                  <span class="info-dot" tabindex="0" data-tip="The market structure the wave breaks against: sector cyclicality, rate sensitivity, defensiveness, innovation, moat, and beta.">i</span>
+                </p>
+                <strong id="coastScore">--</strong>
+              </div>
+              <div class="score-bar"><span id="coastBar"></span></div>
+              <dl id="coastDetails"></dl>
+            </section>
+
+            <section class="score-panel">
+              <div class="section-header compact">
+                <p class="section-label">
+                  Weather
+                  <span class="info-dot" tabindex="0" data-tip="Macro regime proxy from market risk appetite, growth beta, volatility, rates, and commodity pressure.">i</span>
+                </p>
+                <strong id="weatherScore">--</strong>
+              </div>
+              <div class="score-bar"><span id="weatherBar"></span></div>
+              <dl id="weatherDetails"></dl>
+            </section>
+          </div>
+
+          <section class="chart-section validation-section">
+            <div class="section-header">
+              <div>
+                <p class="section-label">Backtest</p>
+                <h3>Predicted vs realized returns</h3>
+              </div>
+              <div id="backtestSummary" class="summary-strip"></div>
+            </div>
+            <canvas id="backtestCanvas" width="1200" height="360"></canvas>
+          </section>
+
+          <section id="warningPanel" class="warning-panel hidden"></section>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
