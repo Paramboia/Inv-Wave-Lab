@@ -8,6 +8,8 @@ const trainingInput = document.querySelector("#trainingInput");
 const stepInput = document.querySelector("#stepInput");
 const analyzeButton = document.querySelector("#analyzeButton");
 const backtestButton = document.querySelector("#backtestButton");
+const mobileAnalyzeButton = document.querySelector("#mobileAnalyzeButton");
+const mobileBacktestButton = document.querySelector("#mobileBacktestButton");
 const statusDot = document.querySelector("#statusDot");
 const systemStatus = document.querySelector("#systemStatus");
 const instrumentMeta = document.querySelector("#instrumentMeta");
@@ -27,6 +29,7 @@ const backtestSummary = document.querySelector("#backtestSummary");
 const waveSceneEl = document.querySelector("#waveScene");
 
 let lastAnalysis = null;
+let lastBacktest = null;
 let waveViz = null;
 
 const metricTips = {
@@ -51,6 +54,28 @@ const scoreTargets = {
 function setStatus(message, state = "idle") {
   systemStatus.textContent = message;
   statusDot.className = `status-dot ${state}`;
+}
+
+function setActionButtonsDisabled(disabled) {
+  analyzeButton.disabled = disabled;
+  backtestButton.disabled = disabled;
+  if (mobileAnalyzeButton) mobileAnalyzeButton.disabled = disabled;
+  if (mobileBacktestButton) mobileBacktestButton.disabled = disabled;
+}
+
+function cssVar(name, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
+function refreshVisuals() {
+  if (waveViz) {
+    const sceneBackground = new THREE.Color(cssVar("--scene-bg-color", "#050708"));
+    waveViz.scene.background = sceneBackground;
+    waveViz.renderer.setClearColor(sceneBackground, 1);
+    resizeWaveScene();
+  }
+  if (lastAnalysis) drawPriceChart(priceCanvas, lastAnalysis);
+  if (lastBacktest) drawBacktestChart(backtestCanvas, lastBacktest);
 }
 
 function formatPct(value, digits = 1) {
@@ -95,9 +120,9 @@ function scoreTone(value, high = 62, low = 42, invert = false) {
 }
 
 function toneColor(tone) {
-  if (tone === "positive") return "#4be07d";
-  if (tone === "negative") return "#ff5c5c";
-  return "#eef7f3";
+  if (tone === "positive") return cssVar("--green", "#4be07d");
+  if (tone === "negative") return cssVar("--red", "#ff5c5c");
+  return cssVar("--chart-price", "#eef7f3");
 }
 
 function currencyFormatter(currency = "USD") {
@@ -246,6 +271,7 @@ function clearCanvas(canvas) {
 }
 
 function clearBacktestState(message = "") {
+  lastBacktest = null;
   backtestSummary.replaceChildren();
   if (message) {
     const item = document.createElement("span");
@@ -258,6 +284,7 @@ function clearBacktestState(message = "") {
 
 function showAnalysisError(ticker, error) {
   lastAnalysis = null;
+  lastBacktest = null;
   instrumentMeta.textContent = `${ticker || "Ticker"} · ${error.code ?? "ERROR"}`;
   instrumentName.textContent = "Analysis unavailable";
   posturePill.textContent = "Error";
@@ -386,12 +413,12 @@ function setupCanvas(canvas) {
 
 function drawAxes(context, width, height, padding, minY, maxY) {
   context.clearRect(0, 0, width, height);
-  context.fillStyle = "#070a0b";
+  context.fillStyle = cssVar("--canvas-bg", "#070a0b");
   context.fillRect(0, 0, width, height);
-  context.strokeStyle = "rgba(143, 160, 155, 0.18)";
+  context.strokeStyle = cssVar("--chart-grid", "rgba(143, 160, 155, 0.18)");
   context.lineWidth = 1;
   context.font = "12px Inter, system-ui, sans-serif";
-  context.fillStyle = "#8fa09b";
+  context.fillStyle = cssVar("--muted", "#8fa09b");
   for (let line = 0; line <= 4; line += 1) {
     const y = padding.top + ((height - padding.top - padding.bottom) * line) / 4;
     context.beginPath();
@@ -445,7 +472,7 @@ function drawPriceChart(canvas, analysis) {
   context.closePath();
   context.fill();
 
-  context.strokeStyle = "#eef7f3";
+  context.strokeStyle = cssVar("--chart-price", "#eef7f3");
   context.lineWidth = 2;
   context.beginPath();
   prices.forEach((point, index) => {
@@ -469,13 +496,13 @@ function drawPriceChart(canvas, analysis) {
   context.arc(forecastX, y(analysis.forecast.targetPrice), 4, 0, Math.PI * 2);
   context.fill();
 
-  context.strokeStyle = "rgba(255, 189, 74, 0.35)";
+  context.strokeStyle = cssVar("--chart-divider", "rgba(255, 189, 74, 0.35)");
   context.beginPath();
   context.moveTo(padding.left + historyWidth, padding.top);
   context.lineTo(padding.left + historyWidth, height - padding.bottom);
   context.stroke();
 
-  context.fillStyle = "#8fa09b";
+  context.fillStyle = cssVar("--muted", "#8fa09b");
   context.fillText(prices[0].date, padding.left, height - 12);
   context.fillText(prices[prices.length - 1].date, padding.left + historyWidth - 76, height - 12);
   context.fillText(`+${analysis.forecast.horizonDays}d`, forecastX - 42, height - 12);
@@ -542,14 +569,15 @@ function bindWaveSceneControls() {
 
 function createWaveViz() {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x050708);
+  const sceneBackground = new THREE.Color(cssVar("--scene-bg-color", "#050708"));
+  scene.background = sceneBackground;
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
   camera.position.set(5.6, 4.5, 6.8);
   camera.lookAt(0, 0, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0x050708, 1);
+  renderer.setClearColor(sceneBackground, 1);
   waveSceneEl.appendChild(renderer.domElement);
 
   const ambient = new THREE.AmbientLight(0x88fff0, 0.55);
@@ -755,7 +783,7 @@ function drawBacktestChart(canvas, backtest) {
   const x = (index) => padding.left + (index / Math.max(1, trades.length - 1)) * plotWidth;
 
   drawAxes(context, width, height, padding, -maxAbs, maxAbs);
-  context.strokeStyle = "rgba(143, 160, 155, 0.28)";
+  context.strokeStyle = cssVar("--chart-grid-strong", "rgba(143, 160, 155, 0.28)");
   context.beginPath();
   context.moveTo(padding.left, y(0));
   context.lineTo(width - padding.right, y(0));
@@ -774,9 +802,9 @@ function drawBacktestChart(canvas, backtest) {
     context.stroke();
   };
 
-  drawLine("actualReturn", "#eef7f3");
-  drawLine("predictedReturn", "#45f5d0");
-  context.fillStyle = "#8fa09b";
+  drawLine("actualReturn", cssVar("--chart-price", "#eef7f3"));
+  drawLine("predictedReturn", cssVar("--cyan", "#45f5d0"));
+  context.fillStyle = cssVar("--muted", "#8fa09b");
   context.fillText(trades[0].asOf, padding.left, height - 12);
   context.fillText(trades[trades.length - 1].asOf, width - padding.right - 82, height - 12);
 }
@@ -786,8 +814,7 @@ async function loadAnalysis() {
   const range = rangeSelect.value;
   const horizon = horizonInput.value;
   setStatus(`Analyzing ${ticker}`, "loading");
-  analyzeButton.disabled = true;
-  backtestButton.disabled = true;
+  setActionButtonsDisabled(true);
   renderWarnings([]);
   try {
     const analysis = await fetchJson(`/api/analyze?ticker=${encodeURIComponent(ticker)}&range=${range}&horizon=${horizon}`);
@@ -797,8 +824,7 @@ async function loadAnalysis() {
     setStatus(error.message, "error");
     showAnalysisError(ticker, error);
   } finally {
-    analyzeButton.disabled = false;
-    backtestButton.disabled = false;
+    setActionButtonsDisabled(false);
   }
 }
 
@@ -808,8 +834,7 @@ async function runValidation() {
   const training = trainingInput.value;
   const step = stepInput.value;
   setStatus(`Backtesting ${ticker}`, "loading");
-  backtestButton.disabled = true;
-  analyzeButton.disabled = true;
+  setActionButtonsDisabled(true);
   clearBacktestState();
   renderWarnings([]);
   try {
@@ -837,6 +862,7 @@ async function runValidation() {
         return node;
       }),
     );
+    lastBacktest = backtest;
     drawBacktestChart(backtestCanvas, backtest);
     renderWarnings(backtest.dataWarnings);
     setStatus(`Backtest ready ${ticker}`, "ready");
@@ -845,8 +871,7 @@ async function runValidation() {
     clearBacktestState(error.message);
     renderWarnings([error.message]);
   } finally {
-    backtestButton.disabled = false;
-    analyzeButton.disabled = false;
+    setActionButtonsDisabled(false);
   }
 }
 
@@ -856,12 +881,10 @@ form.addEventListener("submit", (event) => {
 });
 
 backtestButton.addEventListener("click", runValidation);
+mobileAnalyzeButton?.addEventListener("click", () => form.requestSubmit());
+mobileBacktestButton?.addEventListener("click", runValidation);
 
-window.addEventListener("resize", () => {
-  if (lastAnalysis) {
-    drawPriceChart(priceCanvas, lastAnalysis);
-    resizeWaveScene();
-  }
-});
+window.addEventListener("resize", refreshVisuals);
+window.addEventListener("inv-wave-theme-change", refreshVisuals);
 
 loadAnalysis();

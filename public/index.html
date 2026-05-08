@@ -1,20 +1,39 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inv-Wave Lab</title>
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("inv-wave-theme");
+          const system = window.matchMedia?.("(prefers-color-scheme: light)")?.matches ? "light" : "dark";
+          document.documentElement.dataset.theme = saved || system;
+        } catch {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <header class="topbar">
-        <div>
+        <a class="brand-lockup" href="/" aria-label="Inv-Wave Lab terminal">
           <p class="eyebrow">Research terminal</p>
           <h1>Inv-Wave Lab <span>Wave Physics Terminal</span></h1>
-        </div>
+        </a>
+        <nav class="topbar-nav" aria-label="Primary navigation">
+          <a href="#terminal">Terminal</a>
+          <a href="#validation">Backtest</a>
+          <a href="#risk">Risk Stack</a>
+        </nav>
         <div class="topbar-actions">
-          <a class="ghost-link" href="/help.html">Help</a>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+            <span>Theme</span>
+            <strong data-theme-label>Dark</strong>
+          </button>
           <div class="system-strip">
             <span id="statusDot" class="status-dot"></span>
             <span id="systemStatus">Idle</span>
@@ -22,7 +41,7 @@
         </div>
       </header>
 
-      <main class="workspace">
+      <main id="terminal" class="workspace">
         <aside class="control-rail">
           <form id="analysisForm" class="control-form">
             <label for="tickerInput">Ticker</label>
@@ -119,7 +138,7 @@
             <canvas id="priceCanvas" width="1200" height="520"></canvas>
           </section>
 
-          <div class="score-grid">
+          <div id="risk" class="score-grid">
             <section class="score-panel">
               <div class="section-header compact">
                 <p class="section-label">
@@ -181,7 +200,7 @@
             </section>
           </div>
 
-          <section class="chart-section validation-section">
+          <section id="validation" class="chart-section validation-section">
             <div class="section-header">
               <div>
                 <p class="section-label">Backtest</p>
@@ -195,8 +214,30 @@
           <section id="warningPanel" class="warning-panel hidden"></section>
         </section>
       </main>
+
+      <footer class="app-footer">
+        <div>
+          <strong>Inv-Wave Lab</strong>
+          <p>Experimental wave-physics stock research terminal. Model output is research context, not financial advice.</p>
+        </div>
+        <nav aria-label="Footer navigation">
+          <a href="/help.html">Help</a>
+          <a href="#terminal">Terminal</a>
+          <a href="#validation">Backtest</a>
+        </nav>
+      </footer>
     </div>
 
+    <nav class="mobile-bottom-nav" aria-label="Mobile quick actions">
+      <button id="mobileAnalyzeButton" type="button">Analyze</button>
+      <button id="mobileBacktestButton" type="button">Backtest</button>
+      <a href="/help.html">Help</a>
+      <button class="theme-toggle compact" type="button" data-theme-toggle aria-label="Toggle color theme">
+        <span data-theme-label>Dark</span>
+      </button>
+    </nav>
+
+    <script type="module" src="/theme.js"></script>
     <script type="module" src="/app.js"></script>
   </body>
 </html>

@@ -1,24 +1,43 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inv-Wave Lab Help</title>
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("inv-wave-theme");
+          const system = window.matchMedia?.("(prefers-color-scheme: light)")?.matches ? "light" : "dark";
+          document.documentElement.dataset.theme = saved || system;
+        } catch {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div class="app-shell help-app">
       <header class="topbar">
-        <div>
+        <a class="brand-lockup" href="/" aria-label="Inv-Wave Lab terminal">
           <p class="eyebrow">Operator guide</p>
           <h1>Inv-Wave Lab <span>Help Console</span></h1>
-        </div>
+        </a>
+        <nav class="topbar-nav" aria-label="Primary navigation">
+          <a href="/">Terminal</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#limits">Limits</a>
+        </nav>
         <div class="topbar-actions">
-          <a class="ghost-link" href="/">Terminal</a>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+            <span>Theme</span>
+            <strong data-theme-label>Dark</strong>
+          </button>
         </div>
       </header>
 
-      <main class="help-shell">
+      <main id="guide" class="help-shell">
         <section class="help-hero">
           <div>
             <p class="eyebrow">How to read the model</p>
@@ -186,6 +205,29 @@
           </div>
         </section>
       </main>
+
+      <footer class="app-footer">
+        <div>
+          <strong>Inv-Wave Lab</strong>
+          <p>Experimental wave-physics stock research terminal. Use the guide as model context, not investment advice.</p>
+        </div>
+        <nav aria-label="Footer navigation">
+          <a href="/">Terminal</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#limits">Limits</a>
+        </nav>
+      </footer>
     </div>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile quick actions">
+      <a href="/">Terminal</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#limits">Limits</a>
+      <button class="theme-toggle compact" type="button" data-theme-toggle aria-label="Toggle color theme">
+        <span data-theme-label>Dark</span>
+      </button>
+    </nav>
+
+    <script type="module" src="/theme.js"></script>
   </body>
 </html>
