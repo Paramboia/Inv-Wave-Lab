@@ -7,6 +7,7 @@ const APP_SHELL = [
   "/help.html",
   "/about-us.html",
   "/styles.css",
+  "/analytics.js",
   "/theme.js",
   "/app.js",
   "/pwa-install.js",

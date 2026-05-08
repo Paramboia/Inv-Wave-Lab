@@ -36,6 +36,11 @@ function applyTheme(theme, persist = false) {
   root.style.colorScheme = theme;
   if (persist) writeTheme(theme);
   updateThemeButtons(theme);
+  if (persist) {
+    window.InvWaveAnalytics?.track("theme_change", {
+      theme,
+    });
+  }
   window.dispatchEvent(new CustomEvent("inv-wave-theme-change", { detail: { theme } }));
 }
 

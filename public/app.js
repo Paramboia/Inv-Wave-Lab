@@ -135,6 +135,10 @@ function toneColor(tone) {
   return cssVar("--chart-price", "#eef7f3");
 }
 
+function trackAnalytics(eventName, params = {}) {
+  window.InvWaveAnalytics?.track(eventName, params);
+}
+
 function currencyFormatter(currency = "USD") {
   try {
     return new Intl.NumberFormat(undefined, {
@@ -792,6 +796,9 @@ function sceneControlButton(label, path, onClick) {
   button.innerHTML = `<svg class="lucide-icon" aria-hidden="true" viewBox="0 0 24 24">${path}</svg>`;
   button.addEventListener("click", (event) => {
     event.stopPropagation();
+    trackAnalytics("wave_surface_control", {
+      control: label.toLowerCase().replace(/\s+/g, "_"),
+    });
     onClick();
   });
   return button;
@@ -1132,10 +1139,17 @@ function drawBacktestChart(canvas, backtest) {
   chartHoverOverlay(context, hover);
 }
 
-async function loadAnalysis() {
+async function loadAnalysis(source = "manual") {
   const ticker = tickerInput.value.trim().toUpperCase();
   const range = rangeSelect.value;
   const horizon = horizonInput.value;
+  const horizonDays = Number(horizon);
+  trackAnalytics("analysis_start", {
+    source,
+    stock_symbol: ticker,
+    range,
+    horizon_days: horizonDays,
+  });
   setStatus(`Analyzing ${ticker}`, "loading");
   setActionButtonsDisabled(true);
   renderWarnings([]);
@@ -1143,19 +1157,49 @@ async function loadAnalysis() {
     const analysis = await fetchJson(`/api/analyze?ticker=${encodeURIComponent(ticker)}&range=${range}&horizon=${horizon}`);
     renderAnalysis(analysis);
     setStatus(`Ready ${analysis.symbol}`, "ready");
+    trackAnalytics("analysis_success", {
+      source,
+      stock_symbol: analysis.symbol,
+      range,
+      horizon_days: analysis.forecast.horizonDays,
+      posture: analysis.posture,
+      expected_return_pct: Number((analysis.forecast.expectedReturnPct * 100).toFixed(2)),
+      confidence: Number(analysis.forecast.confidence.toFixed(1)),
+      composite_score: Number(analysis.compositeScore.toFixed(1)),
+      risk_score: Number(analysis.risk.score.toFixed(1)),
+      physics_score: Number(analysis.wavePhysics.score.toFixed(1)),
+      tsunami_score: Number(analysis.wavePhysics.tsunamiSetupScore.toFixed(1)),
+      coverage_status: analysis.dataCoverage?.status,
+      warning_count: analysis.dataWarnings?.length ?? 0,
+    });
   } catch (error) {
     setStatus(error.message, "error");
     showAnalysisError(ticker, error);
+    trackAnalytics("analysis_error", {
+      source,
+      stock_symbol: ticker,
+      range,
+      horizon_days: horizonDays,
+      error_code: error.code ?? "UNKNOWN",
+      error_message: error.message,
+    });
   } finally {
     setActionButtonsDisabled(false);
   }
 }
 
-async function runValidation() {
+async function runValidation(source = "manual") {
   const ticker = tickerInput.value.trim().toUpperCase();
   const horizon = horizonInput.value;
   const training = trainingInput.value;
   const step = stepInput.value;
+  trackAnalytics("backtest_start", {
+    source,
+    stock_symbol: ticker,
+    horizon_days: Number(horizon),
+    training_days: Number(training),
+    step_days: Number(step),
+  });
   setStatus(`Backtesting ${ticker}`, "loading");
   setActionButtonsDisabled(true);
   clearBacktestState();
@@ -1189,10 +1233,31 @@ async function runValidation() {
     drawBacktestChart(backtestCanvas, backtest);
     renderWarnings(backtest.dataWarnings);
     setStatus(`Backtest ready ${ticker}`, "ready");
+    trackAnalytics("backtest_success", {
+      source,
+      stock_symbol: backtest.symbol ?? ticker,
+      sample_size: backtest.sampleSize,
+      directional_accuracy_pct: Number((backtest.metrics.directionalAccuracy * 100).toFixed(1)),
+      information_coefficient: Number(backtest.metrics.informationCoefficient.toFixed(3)),
+      mean_absolute_error_pct: Number((backtest.metrics.meanAbsoluteError * 100).toFixed(2)),
+      interval_68_hit_rate_pct: Number((backtest.metrics.interval68HitRate * 100).toFixed(1)),
+      tsunami_setup_count: backtest.metrics.tsunamiSetupCount,
+      tsunami_hit_rate_pct: Number((backtest.metrics.tsunamiSetupHitRate * 100).toFixed(1)),
+      warning_count: backtest.dataWarnings?.length ?? 0,
+    });
   } catch (error) {
     setStatus(error.message, "error");
     clearBacktestState(error.message);
     renderWarnings([error.message]);
+    trackAnalytics("backtest_error", {
+      source,
+      stock_symbol: ticker,
+      horizon_days: Number(horizon),
+      training_days: Number(training),
+      step_days: Number(step),
+      error_code: error.code ?? "UNKNOWN",
+      error_message: error.message,
+    });
   } finally {
     setActionButtonsDisabled(false);
   }
@@ -1200,12 +1265,12 @@ async function runValidation() {
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  loadAnalysis();
+  loadAnalysis("form_submit");
 });
 
-backtestButton.addEventListener("click", runValidation);
+backtestButton.addEventListener("click", () => runValidation("button_click"));
 
 window.addEventListener("resize", refreshVisuals);
 window.addEventListener("inv-wave-theme-change", refreshVisuals);
 
-loadAnalysis();
+loadAnalysis("initial_load");

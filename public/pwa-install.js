@@ -44,24 +44,37 @@ function showPrompt(mode = "native") {
   }
   promptEl.classList.remove("hidden");
   window.requestAnimationFrame(() => promptEl.classList.add("is-visible"));
+  window.InvWaveAnalytics?.track("pwa_prompt_show", {
+    mode,
+  });
 }
 
-function hidePrompt(remember = true) {
+function hidePrompt(remember = true, reason = "dismiss") {
   if (!promptEl) return;
   promptEl.classList.remove("is-visible");
   if (remember) rememberDismissal();
   window.setTimeout(() => promptEl.classList.add("hidden"), 180);
+  window.InvWaveAnalytics?.track("pwa_prompt_hide", {
+    reason,
+    remembered: remember,
+  });
 }
 
 async function installApp() {
+  window.InvWaveAnalytics?.track("pwa_install_click", {
+    mode: promptEl?.dataset.mode ?? "native",
+  });
   if (!deferredPrompt) {
-    hidePrompt(true);
+    hidePrompt(true, "manual_ios_instruction");
     return;
   }
   deferredPrompt.prompt();
   const choice = await deferredPrompt.userChoice;
   deferredPrompt = null;
-  hidePrompt(choice?.outcome !== "accepted");
+  window.InvWaveAnalytics?.track("pwa_install_result", {
+    outcome: choice?.outcome ?? "unknown",
+  });
+  hidePrompt(choice?.outcome !== "accepted", choice?.outcome ?? "unknown");
 }
 
 if ("serviceWorker" in navigator) {
@@ -79,7 +92,10 @@ if (promptEl && !isStandalone()) {
     window.setTimeout(() => showPrompt("native"), 2200);
   });
 
-  window.addEventListener("appinstalled", () => hidePrompt(false));
+  window.addEventListener("appinstalled", () => {
+    window.InvWaveAnalytics?.track("pwa_installed");
+    hidePrompt(false, "installed");
+  });
 
   const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
   if (isIos && !wasDismissedRecently()) {
@@ -88,5 +104,5 @@ if (promptEl && !isStandalone()) {
 }
 
 installButton?.addEventListener("click", installApp);
-dismissButton?.addEventListener("click", () => hidePrompt(true));
-laterButton?.addEventListener("click", () => hidePrompt(true));
+dismissButton?.addEventListener("click", () => hidePrompt(true, "dismiss_button"));
+laterButton?.addEventListener("click", () => hidePrompt(true, "later_button"));
