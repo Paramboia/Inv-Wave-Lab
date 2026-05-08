@@ -31,6 +31,9 @@ const waveSceneEl = document.querySelector("#waveScene");
 let lastAnalysis = null;
 let lastBacktest = null;
 let waveViz = null;
+let chartTooltipId = 0;
+
+const chartState = new WeakMap();
 
 const metricTips = {
   Current: "Latest adjusted close returned by the price data adapter.",
@@ -288,6 +291,137 @@ function coverageText(analysis) {
 function clearCanvas(canvas) {
   const context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
+  chartState.delete(canvas);
+  hideChartTooltip(canvas);
+}
+
+function ensureChartTooltip(canvas) {
+  const parent = canvas.parentElement;
+  let tooltip = parent.querySelector(".chart-tooltip");
+  if (!tooltip) {
+    tooltip = document.createElement("div");
+    tooltip.className = "chart-tooltip";
+    tooltip.id = `chartTooltip${(chartTooltipId += 1)}`;
+    tooltip.setAttribute("aria-hidden", "true");
+    parent.appendChild(tooltip);
+  }
+  return tooltip;
+}
+
+function hideChartTooltip(canvas) {
+  const tooltip = canvas.parentElement?.querySelector(".chart-tooltip");
+  tooltip?.classList.remove("is-visible");
+}
+
+function chartTooltipRow(row) {
+  const item = document.createElement("div");
+  item.className = row.tone ? `chart-tooltip__row ${row.tone}` : "chart-tooltip__row";
+  const label = document.createElement("span");
+  label.textContent = row.label;
+  const value = document.createElement("strong");
+  value.textContent = row.value;
+  item.append(label, value);
+  return item;
+}
+
+function showChartTooltip(canvas, hover) {
+  const tooltip = ensureChartTooltip(canvas);
+  const title = document.createElement("p");
+  title.className = "chart-tooltip__title";
+  title.textContent = hover.title;
+  tooltip.replaceChildren(title, ...hover.rows.map(chartTooltipRow));
+  tooltip.classList.add("is-visible");
+
+  const parentRect = canvas.parentElement.getBoundingClientRect();
+  const tooltipWidth = tooltip.offsetWidth;
+  const tooltipHeight = tooltip.offsetHeight;
+  const left = clampValue(hover.x + 14, 10, parentRect.width - tooltipWidth - 10);
+  const top = clampValue(hover.y - tooltipHeight * 0.5, 10, parentRect.height - tooltipHeight - 10);
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+}
+
+function chartBoundsContains(bounds, x, y) {
+  return x >= bounds.left && x <= bounds.right && y >= bounds.top && y <= bounds.bottom;
+}
+
+function chartHoverOverlay(context, hover) {
+  if (!hover) return;
+  const bounds = hover.bounds;
+  context.save();
+  context.lineWidth = 1;
+  context.strokeStyle = cssVar("--chart-cursor", "rgba(69, 245, 208, 0.72)");
+  context.setLineDash([4, 5]);
+  context.beginPath();
+  context.moveTo(hover.x, bounds.top);
+  context.lineTo(hover.x, bounds.bottom);
+  if (Number.isFinite(hover.y)) {
+    context.moveTo(bounds.left, hover.y);
+    context.lineTo(bounds.right, hover.y);
+  }
+  context.stroke();
+  context.setLineDash([]);
+
+  for (const marker of hover.markers ?? [{ x: hover.x, y: hover.y, color: hover.color }]) {
+    context.fillStyle = marker.color;
+    context.strokeStyle = cssVar("--scene-bg-color", "#050708");
+    context.lineWidth = 3;
+    context.beginPath();
+    context.arc(marker.x, marker.y, 5, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+  }
+  context.restore();
+}
+
+function nearestPriceHover(state, x, y) {
+  if (!chartBoundsContains(state.bounds, x, y)) return null;
+  const forecastStart = state.bounds.left + state.historyWidth;
+  if (x >= forecastStart) return state.forecastPoint;
+  const index = clampValue(
+    Math.round(((x - state.bounds.left) / state.historyWidth) * (state.points.length - 1)),
+    0,
+    state.points.length - 1,
+  );
+  return state.points[index];
+}
+
+function nearestBacktestHover(state, x, y) {
+  if (!chartBoundsContains(state.bounds, x, y)) return null;
+  const index = clampValue(
+    Math.round(((x - state.bounds.left) / (state.bounds.right - state.bounds.left)) * (state.trades.length - 1)),
+    0,
+    state.trades.length - 1,
+  );
+  return state.points[index];
+}
+
+function handleChartPointerMove(canvas, event) {
+  const state = chartState.get(canvas);
+  if (!state) return;
+  const rect = canvas.getBoundingClientRect();
+  const localX = event.clientX - rect.left;
+  const localY = event.clientY - rect.top;
+  const hover = state.kind === "price" ? nearestPriceHover(state, localX, localY) : nearestBacktestHover(state, localX, localY);
+  state.hover = hover;
+  if (state.kind === "price") drawPriceChart(canvas, state.analysis);
+  else drawBacktestChart(canvas, state.backtest);
+  if (hover) showChartTooltip(canvas, hover);
+  else hideChartTooltip(canvas);
+}
+
+function bindChartInteractions(canvas) {
+  if (!canvas || canvas.dataset.chartInteractionsBound) return;
+  canvas.dataset.chartInteractionsBound = "true";
+  canvas.addEventListener("pointermove", (event) => handleChartPointerMove(canvas, event));
+  canvas.addEventListener("pointerleave", () => {
+    const state = chartState.get(canvas);
+    if (!state) return;
+    state.hover = null;
+    hideChartTooltip(canvas);
+    if (state.kind === "price") drawPriceChart(canvas, state.analysis);
+    else drawBacktestChart(canvas, state.backtest);
+  });
 }
 
 function clearBacktestState(message = "") {
@@ -439,6 +573,7 @@ function drawAxes(context, width, height, padding, minY, maxY) {
   context.lineWidth = 1;
   context.font = "12px Inter, system-ui, sans-serif";
   context.fillStyle = cssVar("--muted", "#8fa09b");
+  context.setLineDash([3, 7]);
   for (let line = 0; line <= 4; line += 1) {
     const y = padding.top + ((height - padding.top - padding.bottom) * line) / 4;
     context.beginPath();
@@ -448,15 +583,19 @@ function drawAxes(context, width, height, padding, minY, maxY) {
     const value = maxY - ((maxY - minY) * line) / 4;
     context.fillText(value.toFixed(2), 10, y + 4);
   }
+  context.setLineDash([]);
 }
 
 function drawPriceChart(canvas, analysis) {
+  const previousState = chartState.get(canvas);
+  const hover = previousState?.analysis === analysis ? previousState.hover : null;
   const { context, width, height } = setupCanvas(canvas);
   const prices = analysis.priceHistory ?? [];
   if (prices.length < 2) {
     context.clearRect(0, 0, width, height);
     return;
   }
+  bindChartInteractions(canvas);
   const padding = { top: 18, right: 24, bottom: 34, left: 54 };
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
@@ -475,6 +614,45 @@ function drawPriceChart(canvas, analysis) {
   const forecastX = padding.left + historyWidth + forecastWidth;
   const forecastTone = valueTone(analysis.forecast.expectedReturnPct);
   const forecastColor = toneColor(forecastTone);
+  const priceColor = cssVar("--chart-price", "#eef7f3");
+  const money = currencyFormatter(analysis.currency);
+  const bounds = { left: padding.left, right: width - padding.right, top: padding.top, bottom: height - padding.bottom };
+  const points = prices.map((point, index) => {
+    const returnFromStart = point.close / prices[0].close - 1;
+    return {
+      bounds,
+      color: priceColor,
+      date: point.date,
+      markers: [{ x: x(index), y: y(point.close), color: priceColor }],
+      rows: [
+        { label: "Close", value: money.format(point.close) },
+        { label: "From start", value: formatPct(returnFromStart), tone: valueTone(returnFromStart) },
+      ],
+      title: point.date,
+      x: x(index),
+      y: y(point.close),
+    };
+  });
+  const forecastPoint = {
+    bounds,
+    color: forecastColor,
+    markers: [{ x: forecastX, y: y(analysis.forecast.targetPrice), color: forecastColor }],
+    rows: [
+      { label: "Target", value: money.format(analysis.forecast.targetPrice), tone: forecastTone },
+      { label: "Expected", value: formatPct(analysis.forecast.expectedReturnPct), tone: forecastTone },
+      {
+        label: "68% range",
+        value: `${money.format(analysis.forecast.interval68.low)} - ${money.format(analysis.forecast.interval68.high)}`,
+      },
+      {
+        label: "90% range",
+        value: `${money.format(analysis.forecast.interval90.low)} - ${money.format(analysis.forecast.interval90.high)}`,
+      },
+    ],
+    title: `Forecast +${analysis.forecast.horizonDays}d`,
+    x: forecastX,
+    y: y(analysis.forecast.targetPrice),
+  };
 
   drawAxes(context, width, height, padding, minY, maxY);
 
@@ -492,7 +670,23 @@ function drawPriceChart(canvas, analysis) {
   context.closePath();
   context.fill();
 
-  context.strokeStyle = cssVar("--chart-price", "#eef7f3");
+  const lineGradient = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+  lineGradient.addColorStop(0, "rgba(69, 245, 208, 0.2)");
+  lineGradient.addColorStop(1, "rgba(69, 245, 208, 0)");
+  context.fillStyle = lineGradient;
+  context.beginPath();
+  prices.forEach((point, index) => {
+    const px = x(index);
+    const py = y(point.close);
+    if (index === 0) context.moveTo(px, py);
+    else context.lineTo(px, py);
+  });
+  context.lineTo(x(prices.length - 1), height - padding.bottom);
+  context.lineTo(x(0), height - padding.bottom);
+  context.closePath();
+  context.fill();
+
+  context.strokeStyle = priceColor;
   context.lineWidth = 2;
   context.beginPath();
   prices.forEach((point, index) => {
@@ -526,6 +720,16 @@ function drawPriceChart(canvas, analysis) {
   context.fillText(prices[0].date, padding.left, height - 12);
   context.fillText(prices[prices.length - 1].date, padding.left + historyWidth - 76, height - 12);
   context.fillText(`+${analysis.forecast.horizonDays}d`, forecastX - 42, height - 12);
+  chartState.set(canvas, {
+    analysis,
+    bounds,
+    forecastPoint,
+    historyWidth,
+    hover,
+    kind: "price",
+    points,
+  });
+  chartHoverOverlay(context, hover);
   context.restore();
 }
 
@@ -547,6 +751,54 @@ function disposeWaveObjects() {
     waveViz.surfaceGroup?.remove(object);
   }
   waveViz.objects = [];
+}
+
+function setWaveZoom(nextZoom) {
+  if (!waveViz) return;
+  waveViz.targetZoom = clampValue(nextZoom, 0.7, 1.85);
+  updateWaveReadout();
+}
+
+function resetWaveView() {
+  if (!waveViz) return;
+  waveViz.userRotationX = 0;
+  waveViz.userRotationY = 0;
+  setWaveZoom(1);
+}
+
+function updateWaveCamera() {
+  if (!waveViz) return;
+  waveViz.zoom += (waveViz.targetZoom - waveViz.zoom) * 0.16;
+  const distanceScale = 1 / waveViz.zoom;
+  waveViz.camera.position.set(5.6 * distanceScale, 4.5 * distanceScale, 6.8 * distanceScale);
+  waveViz.camera.lookAt(0, 0, 0);
+}
+
+function updateWaveReadout() {
+  if (!waveViz?.readout) return;
+  waveViz.readout.replaceChildren(
+    ...[
+      ...(waveViz.readoutLabels ?? []),
+      `zoom ${Math.round((waveViz.targetZoom ?? 1) * 100)}%`,
+    ].map((label) => {
+      const item = document.createElement("span");
+      item.textContent = label;
+      return item;
+    }),
+  );
+}
+
+function sceneControlButton(label, path, onClick) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.setAttribute("aria-label", label);
+  button.title = label;
+  button.innerHTML = `<svg class="lucide-icon" aria-hidden="true" viewBox="0 0 24 24">${path}</svg>`;
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    onClick();
+  });
+  return button;
 }
 
 function bindWaveSceneControls() {
@@ -585,6 +837,15 @@ function bindWaveSceneControls() {
   waveSceneEl.addEventListener("pointerup", endDrag);
   waveSceneEl.addEventListener("pointercancel", endDrag);
   waveSceneEl.addEventListener("pointerleave", endDrag);
+  waveSceneEl.addEventListener(
+    "wheel",
+    (event) => {
+      if (!waveViz) return;
+      event.preventDefault();
+      setWaveZoom(waveViz.targetZoom - event.deltaY * 0.0012);
+    },
+    { passive: false },
+  );
 }
 
 function createWaveViz() {
@@ -620,14 +881,29 @@ function createWaveViz() {
   readout.className = "scene-readout";
   waveSceneEl.appendChild(readout);
 
+  const controls = document.createElement("div");
+  controls.className = "scene-controls";
+  controls.append(
+    sceneControlButton("Zoom out", '<path d="M5 12h14"></path>', () => setWaveZoom(waveViz.targetZoom - 0.16)),
+    sceneControlButton("Reset 3D view", '<path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 3v6h6"></path>', resetWaveView),
+    sceneControlButton("Zoom in", '<path d="M12 5v14"></path><path d="M5 12h14"></path>', () => setWaveZoom(waveViz.targetZoom + 0.16)),
+  );
+  controls.addEventListener("pointerdown", (event) => event.stopPropagation());
+  controls.addEventListener("wheel", (event) => event.stopPropagation());
+  waveSceneEl.appendChild(controls);
+
   waveViz = {
     scene,
     camera,
+    controls,
     renderer,
     readout,
+    readoutLabels: [],
     surfaceGroup,
     objects: [],
     targetTilt: 0,
+    targetZoom: 1,
+    zoom: 1,
     userRotationX: 0,
     userRotationY: 0,
     dragging: false,
@@ -750,19 +1026,13 @@ function renderWaveScene(analysis) {
     -0.28 + waveViz.userRotationY,
     0,
   );
-  waveViz.readout.replaceChildren(
-    ...[
-      analysis.wavePhysics.setupStage,
-      `peak ${analysis.wavePhysics.spectralPeakPeriod}d`,
-      `band ${formatNumber(analysis.wavePhysics.spectralBandwidth, 2)}`,
-      `flux ${formatNumber(analysis.wavePhysics.netEnergyFlux, 1)}`,
-      "drag to inspect",
-    ].map((label) => {
-      const item = document.createElement("span");
-      item.textContent = label;
-      return item;
-    }),
-  );
+  waveViz.readoutLabels = [
+    analysis.wavePhysics.setupStage,
+    `peak ${analysis.wavePhysics.spectralPeakPeriod}d`,
+    `band ${formatNumber(analysis.wavePhysics.spectralBandwidth, 2)}`,
+    `flux ${formatNumber(analysis.wavePhysics.netEnergyFlux, 1)}`,
+  ];
+  updateWaveReadout();
 }
 
 function resizeWaveScene() {
@@ -783,17 +1053,21 @@ function animateWaveScene() {
     waveViz.surfaceGroup.rotation.x += (targetX - waveViz.surfaceGroup.rotation.x) * 0.14;
     waveViz.surfaceGroup.rotation.y += (targetY - waveViz.surfaceGroup.rotation.y) * 0.14;
   }
+  updateWaveCamera();
   waveViz.renderer.render(waveViz.scene, waveViz.camera);
   window.requestAnimationFrame(animateWaveScene);
 }
 
 function drawBacktestChart(canvas, backtest) {
+  const previousState = chartState.get(canvas);
+  const hover = previousState?.backtest === backtest ? previousState.hover : null;
   const { context, width, height } = setupCanvas(canvas);
   const trades = backtest.trades ?? [];
   if (trades.length < 2) {
     context.clearRect(0, 0, width, height);
     return;
   }
+  bindChartInteractions(canvas);
   const padding = { top: 18, right: 24, bottom: 34, left: 54 };
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
@@ -801,6 +1075,30 @@ function drawBacktestChart(canvas, backtest) {
   const maxAbs = Math.max(0.02, ...values.map((value) => Math.abs(value))) * 1.15;
   const y = (value) => padding.top + (1 - (value + maxAbs) / (maxAbs * 2)) * plotHeight;
   const x = (index) => padding.left + (index / Math.max(1, trades.length - 1)) * plotWidth;
+  const bounds = { left: padding.left, right: width - padding.right, top: padding.top, bottom: height - padding.bottom };
+  const actualColor = cssVar("--chart-price", "#eef7f3");
+  const predictedColor = cssVar("--cyan", "#45f5d0");
+  const points = trades.map((trade, index) => {
+    const error = trade.actualReturn - trade.predictedReturn;
+    const px = x(index);
+    return {
+      bounds,
+      color: actualColor,
+      markers: [
+        { x: px, y: y(trade.actualReturn), color: actualColor },
+        { x: px, y: y(trade.predictedReturn), color: predictedColor },
+      ],
+      rows: [
+        { label: "Predicted", value: formatPct(trade.predictedReturn), tone: valueTone(trade.predictedReturn) },
+        { label: "Realized", value: formatPct(trade.actualReturn), tone: valueTone(trade.actualReturn) },
+        { label: "Error", value: formatPct(error), tone: valueTone(-Math.abs(error), -0.01, -0.08) },
+        { label: "Exit", value: trade.exitDate ?? "--" },
+      ],
+      title: trade.asOf,
+      x: px,
+      y: y(trade.actualReturn),
+    };
+  });
 
   drawAxes(context, width, height, padding, -maxAbs, maxAbs);
   context.strokeStyle = cssVar("--chart-grid-strong", "rgba(143, 160, 155, 0.28)");
@@ -822,11 +1120,20 @@ function drawBacktestChart(canvas, backtest) {
     context.stroke();
   };
 
-  drawLine("actualReturn", cssVar("--chart-price", "#eef7f3"));
-  drawLine("predictedReturn", cssVar("--cyan", "#45f5d0"));
+  drawLine("actualReturn", actualColor);
+  drawLine("predictedReturn", predictedColor);
   context.fillStyle = cssVar("--muted", "#8fa09b");
   context.fillText(trades[0].asOf, padding.left, height - 12);
   context.fillText(trades[trades.length - 1].asOf, width - padding.right - 82, height - 12);
+  chartState.set(canvas, {
+    backtest,
+    bounds,
+    hover,
+    kind: "backtest",
+    points,
+    trades,
+  });
+  chartHoverOverlay(context, hover);
 }
 
 async function loadAnalysis() {

@@ -735,6 +735,7 @@ dd.neutral,
   display: grid;
   gap: 12px;
   padding: 16px;
+  position: relative;
 }
 
 .section-header {
@@ -799,10 +800,75 @@ canvas {
   background: var(--canvas-bg);
   border: 1px solid rgba(143, 160, 155, 0.22);
   border-radius: 6px;
+  cursor: crosshair;
   display: block;
   height: auto;
   max-height: 520px;
   width: 100%;
+}
+
+.chart-tooltip {
+  background: var(--tooltip-bg);
+  border: 1px solid rgba(69, 245, 208, 0.34);
+  border-radius: 8px;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.42);
+  color: var(--ink);
+  display: grid;
+  gap: 8px;
+  min-width: 190px;
+  opacity: 0;
+  padding: 11px 12px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateY(5px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  visibility: hidden;
+  z-index: 8;
+}
+
+.chart-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.chart-tooltip__title {
+  color: var(--strong);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.chart-tooltip__row {
+  align-items: center;
+  border-top: 1px solid rgba(143, 160, 155, 0.14);
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding-top: 7px;
+}
+
+.chart-tooltip__row span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.chart-tooltip__row strong {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.chart-tooltip__row.positive strong {
+  color: var(--green);
+}
+
+.chart-tooltip__row.negative strong {
+  color: var(--red);
 }
 
 .wave-scene {
@@ -814,8 +880,8 @@ canvas {
   border: 1px solid rgba(69, 245, 208, 0.28);
   border-radius: 6px;
   cursor: grab;
-  height: min(50vh, 440px);
-  min-height: 300px;
+  height: clamp(380px, 58vh, 620px);
+  min-height: 360px;
   overflow: hidden;
   position: relative;
   touch-action: none;
@@ -862,6 +928,44 @@ canvas {
   border: 1px solid rgba(69, 245, 208, 0.26);
   border-radius: 999px;
   padding: 5px 8px;
+}
+
+.scene-controls {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 3;
+}
+
+.scene-controls button {
+  align-items: center;
+  backdrop-filter: blur(14px);
+  background: var(--subpanel-bg-strong);
+  border: 1px solid rgba(69, 245, 208, 0.3);
+  border-radius: 7px;
+  color: var(--ink);
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  min-height: 34px;
+  min-width: 34px;
+  padding: 0;
+  width: 34px;
+}
+
+.scene-controls button:hover,
+.scene-controls button:focus-visible {
+  border-color: rgba(69, 245, 208, 0.72);
+  color: var(--cyan);
+  outline: none;
+}
+
+.scene-controls .lucide-icon {
+  height: 17px;
+  width: 17px;
 }
 
 .score-grid {
