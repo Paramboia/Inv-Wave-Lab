@@ -1744,28 +1744,6 @@ dd {
   width: 100%;
 }
 
-.back-link {
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  color: var(--muted);
-  display: inline-flex;
-  font-size: 12px;
-  font-weight: 900;
-  justify-self: start;
-  min-height: 34px;
-  padding: 8px 11px;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-.back-link:hover,
-.back-link:focus {
-  border-color: rgba(69, 245, 208, 0.46);
-  color: var(--cyan);
-  outline: none;
-}
-
 .about-hero,
 .about-section,
 .repo-card {
