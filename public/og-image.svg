@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Inv-Wave Lab social preview">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#060809"/>
+      <stop offset="0.52" stop-color="#101416"/>
+      <stop offset="1" stop-color="#151b1d"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" x2="1">
+      <stop offset="0" stop-color="#45f5d0"/>
+      <stop offset="0.54" stop-color="#ffbd4a"/>
+      <stop offset="1" stop-color="#ff4fb8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g opacity="0.18" stroke="#45f5d0" stroke-width="1">
+    <path d="M0 72h1200M0 144h1200M0 216h1200M0 288h1200M0 360h1200M0 432h1200M0 504h1200M0 576h1200"/>
+    <path d="M96 0v630M192 0v630M288 0v630M384 0v630M480 0v630M576 0v630M672 0v630M768 0v630M864 0v630M960 0v630M1056 0v630"/>
+  </g>
+  <path d="M80 405c80-165 152-165 232 0s154 165 246 0 165-165 286 0 173 117 276 8" fill="none" stroke="url(#wave)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M84 480h600" stroke="#ffbd4a" stroke-width="8" stroke-linecap="round" opacity="0.86"/>
+  <text x="84" y="160" fill="#8fa09b" font-family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="30" font-weight="800" letter-spacing="5">EXPERIMENTAL RESEARCH TERMINAL</text>
+  <text x="84" y="260" fill="#eef7f3" font-family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="84" font-weight="900">Inv-Wave Lab</text>
+  <text x="88" y="322" fill="#45f5d0" font-family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="34" font-weight="800">Wave physics for stock analysis</text>
+  <text x="88" y="550" fill="#8fa09b" font-family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="26" font-weight="700">Forecasts - Risk - Backtesting - 3D wave formation</text>
+</svg>
