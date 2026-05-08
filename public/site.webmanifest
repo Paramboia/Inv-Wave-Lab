@@ -31,5 +31,26 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "id": "/",
+  "shortcuts": [
+    {
+      "name": "Terminal",
+      "short_name": "Terminal",
+      "url": "/",
+      "description": "Analyze a stock ticker."
+    },
+    {
+      "name": "Help",
+      "short_name": "Help",
+      "url": "/help",
+      "description": "Read the operator guide."
+    },
+    {
+      "name": "About",
+      "short_name": "About",
+      "url": "/about-us",
+      "description": "Learn about the open-source project."
+    }
   ]
 }

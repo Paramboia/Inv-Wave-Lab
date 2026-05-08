@@ -1432,4 +1432,396 @@ dd {
   .wave-scene {
     height: 330px;
   }
+
+  .about-shell {
+    padding: 14px;
+  }
+
+  .about-hero,
+  .about-section {
+    padding: 18px;
+  }
+
+  .about-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .repo-actions,
+  .pwa-install__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .repo-actions a,
+  .pwa-install__actions button {
+    width: 100%;
+  }
+
+  .pwa-install {
+    bottom: 94px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
+}
+
+
+.about-app {
+  min-height: 100vh;
+}
+
+.about-shell {
+  display: grid;
+  gap: 22px;
+  margin: 0 auto;
+  max-width: 980px;
+  padding: 24px;
+  width: 100%;
+}
+
+.back-link {
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 900;
+  justify-self: start;
+  min-height: 34px;
+  padding: 8px 11px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.back-link:hover,
+.back-link:focus {
+  border-color: rgba(69, 245, 208, 0.46);
+  color: var(--cyan);
+  outline: none;
+}
+
+.about-hero,
+.about-section,
+.repo-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 38%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.about-hero {
+  border-color: rgba(69, 245, 208, 0.28);
+  padding: 28px;
+}
+
+.about-hero h2 {
+  color: var(--strong);
+  font-size: clamp(34px, 6vw, 64px);
+  letter-spacing: 0;
+  line-height: 1.02;
+  margin: 0 0 16px;
+}
+
+.about-hero p,
+.about-section p,
+.about-section li,
+.small-note {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.about-section {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+}
+
+.about-section h3 {
+  color: var(--strong);
+  font-size: 22px;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.about-feature-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.about-feature-grid article {
+  background: var(--subpanel-bg);
+  border: 1px solid rgba(143, 160, 155, 0.18);
+  border-radius: 6px;
+  display: grid;
+  gap: 7px;
+  min-height: 118px;
+  padding: 14px;
+}
+
+.about-feature-grid strong,
+.repo-card strong {
+  color: var(--strong);
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.about-feature-grid span,
+.repo-card span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.42;
+}
+
+.repo-card {
+  box-shadow: none;
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.repo-card__head {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.repo-card__head div:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.repo-mark,
+.pwa-install__icon {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(69, 245, 208, 0.16), rgba(255, 79, 184, 0.12)),
+    var(--scene-bg-color);
+  border: 1px solid rgba(69, 245, 208, 0.28);
+  border-radius: 8px;
+  color: var(--cyan);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 950;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.repo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.repo-actions a,
+.secondary-action {
+  align-items: center;
+  background: var(--button-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.repo-actions a:first-child {
+  border-color: rgba(69, 245, 208, 0.42);
+}
+
+.repo-actions a:hover,
+.secondary-action:hover {
+  border-color: rgba(69, 245, 208, 0.7);
+  color: var(--cyan);
+}
+
+.command-block {
+  background: var(--scene-bg-color);
+  border: 1px solid rgba(69, 245, 208, 0.22);
+  border-radius: 8px;
+  color: var(--ink);
+  margin: 0;
+  overflow-x: auto;
+  padding: 16px;
+}
+
+.command-block code,
+.about-section code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.about-section code:not(.command-block code) {
+  background: var(--subpanel-bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  padding: 1px 4px;
+}
+
+.contribution-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.creator-credit {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 8px 0 24px;
+  text-align: center;
+}
+
+.creator-credit a {
+  color: var(--ink);
+  font-weight: 850;
+  text-decoration: underline;
+  text-decoration-color: rgba(69, 245, 208, 0.42);
+  text-underline-offset: 4px;
+}
+
+.creator-credit a:hover {
+  color: var(--cyan);
+}
+
+.pwa-install {
+  background: var(--panel);
+  border: 1px solid rgba(69, 245, 208, 0.3);
+  border-radius: 8px;
+  bottom: 22px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 14px;
+  max-width: 390px;
+  overflow: hidden;
+  padding: 18px;
+  position: fixed;
+  right: 22px;
+  transform: translateY(18px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  width: min(calc(100vw - 28px), 390px);
+  z-index: 70;
+}
+
+.pwa-install.hidden {
+  display: none;
+}
+
+.pwa-install:not(.is-visible) {
+  opacity: 0;
+}
+
+.pwa-install.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pwa-install__accent {
+  background: linear-gradient(90deg, var(--cyan), var(--amber), var(--magenta));
+  height: 3px;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.pwa-install__body {
+  align-items: start;
+  display: grid;
+  gap: 13px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding-right: 18px;
+}
+
+.pwa-install h2 {
+  color: var(--strong);
+  font-size: 17px;
+  letter-spacing: 0;
+  margin: 0 0 6px;
+}
+
+.pwa-install p:not(.section-label) {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.42;
+  margin: 0;
+}
+
+.pwa-install__actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr auto;
+}
+
+.pwa-dismiss {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 14px;
+  height: 28px;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0;
+  position: absolute;
+  right: 10px;
+  top: 12px;
+  width: 28px;
+  z-index: 1;
+}
+
+.pwa-dismiss:hover {
+  background: var(--subpanel-bg);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+
+/* Final mobile open-source/PWA overrides */
+@media (max-width: 820px) {
+  .about-shell {
+    padding: 14px;
+  }
+
+  .about-hero,
+  .about-section {
+    padding: 18px;
+  }
+
+  .about-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .repo-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .repo-actions a,
+  .pwa-install__actions button {
+    width: 100%;
+  }
+
+  .pwa-install__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .pwa-install {
+    bottom: 94px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
 }

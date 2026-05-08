@@ -29,6 +29,10 @@ const CONTENT_TYPES = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
 };
 
 class ApiError extends Error {
@@ -269,7 +273,8 @@ async function handleStatic(url, response) {
     return;
   }
 
-  const pathname = url.pathname === "/" ? "/index.html" : url.pathname;
+  const requestedPath = url.pathname === "/" ? "/index.html" : url.pathname;
+  const pathname = extname(requestedPath) || requestedPath.endsWith("/") ? requestedPath : `${requestedPath}.html`;
   const safePath = normalize(pathname).replace(/^(\.\.[/\\])+/, "");
   const filePath = join(PUBLIC_DIR, safePath);
   if (!filePath.startsWith(PUBLIC_DIR)) {
