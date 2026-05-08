@@ -12,6 +12,8 @@ const APP_SHELL = [
   "/pwa-install.js",
   "/site.webmanifest",
   "/favicon.svg",
+  "/logo.svg",
+  "/logo.png",
   "/apple-touch-icon.png",
   "/icon-192.png",
   "/icon-512.png",

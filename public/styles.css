@@ -161,9 +161,27 @@ a {
 }
 
 .brand-lockup {
+  align-items: center;
   color: inherit;
+  display: inline-flex;
+  gap: 12px;
   min-width: 0;
   text-decoration: none;
+}
+
+.brand-logo {
+  background: var(--scene-bg-color);
+  border: 1px solid rgba(69, 245, 208, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 0 22px rgba(69, 245, 208, 0.12);
+  flex: 0 0 auto;
+  height: 44px;
+  width: 44px;
+}
+
+.brand-copy {
+  display: block;
+  min-width: 0;
 }
 
 .brand-lockup:focus-visible,
@@ -1311,6 +1329,11 @@ dd {
     padding: 14px;
   }
 
+  .brand-logo {
+    height: 40px;
+    width: 40px;
+  }
+
   .topbar h1 {
     font-size: 21px;
   }
@@ -1741,6 +1764,12 @@ dd {
   gap: 13px;
   grid-template-columns: auto minmax(0, 1fr);
   padding-right: 18px;
+}
+
+.pwa-install__icon img {
+  display: block;
+  height: 100%;
+  width: 100%;
 }
 
 .pwa-install h2 {
