@@ -1614,6 +1614,7 @@ dd {
 
   .mobile-bottom-nav a,
   .mobile-bottom-nav button {
+    -webkit-tap-highlight-color: transparent;
     align-items: center;
     backdrop-filter: blur(18px) saturate(1.2);
     background: var(--mobile-nav-bg);
@@ -1640,6 +1641,18 @@ dd {
     width: 100%;
   }
 
+  .mobile-bottom-nav a[aria-current="page"],
+  .mobile-bottom-nav button[aria-current="page"] {
+    background:
+      linear-gradient(180deg, rgba(69, 245, 208, 0.2), rgba(69, 245, 208, 0.07)),
+      var(--mobile-nav-bg);
+    border-color: rgba(69, 245, 208, 0.72);
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.34),
+      0 0 0 1px rgba(69, 245, 208, 0.08) inset;
+    color: var(--cyan);
+  }
+
   .mobile-bottom-nav .nav-icon {
     height: 18px;
     width: 18px;
@@ -1653,10 +1666,17 @@ dd {
     text-overflow: ellipsis;
   }
 
-  .mobile-bottom-nav a:hover,
-  .mobile-bottom-nav button:hover {
-    border-color: rgba(69, 245, 208, 0.5);
-    color: var(--cyan);
+  .mobile-bottom-nav a:active,
+  .mobile-bottom-nav button:active {
+    transform: translateY(1px);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .mobile-bottom-nav a:hover,
+    .mobile-bottom-nav button:hover {
+      border-color: rgba(69, 245, 208, 0.5);
+      color: var(--cyan);
+    }
   }
 
   .help-shell {

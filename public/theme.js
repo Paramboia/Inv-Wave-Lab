@@ -59,8 +59,40 @@ function syncMobileBottomNav() {
   root.style.setProperty("--mobile-nav-bottom", `calc(${Math.round(bottomOffset)}px + env(safe-area-inset-bottom, 0px))`);
 }
 
+function routePath(pathname) {
+  const path = pathname.replace(/\/+$/, "") || "/";
+  const cleanPath = path.endsWith(".html") ? path.slice(0, -5) || "/" : path;
+  return cleanPath === "/index" ? "/" : cleanPath;
+}
+
+function syncMobileNavState() {
+  const nav = document.querySelector(".mobile-bottom-nav");
+  if (!nav) return;
+  const currentPath = routePath(window.location.pathname);
+  const currentHash = window.location.hash;
+
+  nav.querySelectorAll("a[href]").forEach((link) => {
+    const url = new URL(link.getAttribute("href"), window.location.href);
+    const linkPath = routePath(url.pathname);
+    let isActive = false;
+
+    if (currentPath === "/" && linkPath === "/") {
+      isActive = url.hash === "#validation" ? currentHash === "#validation" : currentHash !== "#validation";
+    } else {
+      isActive = currentPath === linkPath && (!url.hash || url.hash === currentHash);
+    }
+
+    if (isActive) {
+      link.setAttribute("aria-current", "page");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+}
+
 applyTheme(readTheme());
 syncMobileBottomNav();
+syncMobileNavState();
 
 document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
   button.addEventListener("click", toggleTheme);
@@ -77,5 +109,7 @@ window.matchMedia?.("(prefers-color-scheme: light)").addEventListener?.("change"
 
 window.addEventListener("resize", syncMobileBottomNav);
 window.addEventListener("orientationchange", syncMobileBottomNav);
+window.addEventListener("hashchange", syncMobileNavState);
+window.addEventListener("popstate", syncMobileNavState);
 window.visualViewport?.addEventListener("resize", syncMobileBottomNav);
 window.visualViewport?.addEventListener("scroll", syncMobileBottomNav);
