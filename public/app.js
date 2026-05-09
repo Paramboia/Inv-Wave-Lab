@@ -20,7 +20,6 @@ const buySummary = document.querySelector("#buySummary");
 const buyLevels = document.querySelector("#buyLevels");
 const buyReasons = document.querySelector("#buyReasons");
 const metricGrid = document.querySelector("#metricGrid");
-const warningPanel = document.querySelector("#warningPanel");
 const priceCanvas = document.querySelector("#priceCanvas");
 const backtestCanvas = document.querySelector("#backtestCanvas");
 const backtestSummary = document.querySelector("#backtestSummary");
@@ -265,22 +264,6 @@ function renderBuyOpportunity(analysis) {
   );
 }
 
-function renderWarnings(warnings = []) {
-  if (!warnings.length) {
-    warningPanel.classList.add("hidden");
-    warningPanel.textContent = "";
-    return;
-  }
-  warningPanel.classList.remove("hidden");
-  warningPanel.replaceChildren(
-    ...warnings.map((warning) => {
-      const item = document.createElement("div");
-      item.textContent = warning;
-      return item;
-    }),
-  );
-}
-
 function coverageText(analysis) {
   const coverage = analysis.dataCoverage;
   if (!coverage) return `${analysis.observations.toLocaleString()} observations`;
@@ -459,7 +442,6 @@ function showAnalysisError(ticker, error) {
   }
   clearCanvas(priceCanvas);
   clearBacktestState();
-  renderWarnings([error.message]);
 }
 
 function renderAnalysis(analysis) {
@@ -542,7 +524,6 @@ function renderAnalysis(analysis) {
     ["Market beta", analysis.weather.marketBeta.toFixed(2), analysis.weather.marketBeta > 1.35 ? "negative" : analysis.weather.marketBeta < 0.85 ? "positive" : "neutral"],
   ]);
 
-  renderWarnings(analysis.dataWarnings);
   renderWaveScene(analysis);
   drawPriceChart(priceCanvas, analysis);
 }
@@ -1152,7 +1133,6 @@ async function loadAnalysis(source = "manual") {
   });
   setStatus(`Analyzing ${ticker}`, "loading");
   setActionButtonsDisabled(true);
-  renderWarnings([]);
   try {
     const analysis = await fetchJson(`/api/analyze?ticker=${encodeURIComponent(ticker)}&range=${range}&horizon=${horizon}`);
     renderAnalysis(analysis);
@@ -1203,7 +1183,6 @@ async function runValidation(source = "manual") {
   setStatus(`Backtesting ${ticker}`, "loading");
   setActionButtonsDisabled(true);
   clearBacktestState();
-  renderWarnings([]);
   try {
     const backtest = await fetchJson(
       `/api/backtest?ticker=${encodeURIComponent(ticker)}&range=10y&horizon=${horizon}&training=${training}&step=${step}`,
@@ -1231,7 +1210,6 @@ async function runValidation(source = "manual") {
     );
     lastBacktest = backtest;
     drawBacktestChart(backtestCanvas, backtest);
-    renderWarnings(backtest.dataWarnings);
     setStatus(`Backtest ready ${ticker}`, "ready");
     trackAnalytics("backtest_success", {
       source,
@@ -1248,7 +1226,6 @@ async function runValidation(source = "manual") {
   } catch (error) {
     setStatus(error.message, "error");
     clearBacktestState(error.message);
-    renderWarnings([error.message]);
     trackAnalytics("backtest_error", {
       source,
       stock_symbol: ticker,

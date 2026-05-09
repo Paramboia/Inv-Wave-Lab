@@ -469,7 +469,6 @@ button:disabled {
 .buy-panel,
 .chart-section,
 .score-panel,
-.warning-panel,
 .metric {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34%),
@@ -1026,13 +1025,6 @@ dd {
   max-width: 150px;
   overflow-wrap: anywhere;
   text-align: right;
-}
-
-.warning-panel {
-  background: rgba(255, 189, 74, 0.1);
-  box-shadow: none;
-  color: var(--warning-ink);
-  padding: 14px 16px;
 }
 
 .info-dot {
