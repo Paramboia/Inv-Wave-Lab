@@ -469,6 +469,7 @@ button:disabled {
 .buy-panel,
 .chart-section,
 .score-panel,
+.warning-panel,
 .metric {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34%),
@@ -1025,6 +1026,60 @@ dd {
   max-width: 150px;
   overflow-wrap: anywhere;
   text-align: right;
+}
+
+.warning-panel {
+  border-color: rgba(255, 189, 74, 0.34);
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.warning-panel__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.warning-panel__header .section-label {
+  margin: 0;
+}
+
+.warning-panel__header strong {
+  align-items: center;
+  background: rgba(255, 189, 74, 0.14);
+  border: 1px solid rgba(255, 189, 74, 0.32);
+  border-radius: 999px;
+  color: var(--warning-ink);
+  display: inline-flex;
+  font-size: 12px;
+  height: 24px;
+  justify-content: center;
+  min-width: 24px;
+  padding: 0 8px;
+}
+
+.warning-panel__summary {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.warning-panel__list {
+  display: grid;
+  gap: 8px;
+}
+
+.warning-panel__list div {
+  background: rgba(255, 189, 74, 0.08);
+  border: 1px solid rgba(255, 189, 74, 0.2);
+  border-radius: 6px;
+  color: var(--warning-ink);
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 10px 12px;
 }
 
 .info-dot {
