@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://invwavelab.com/sitemap.xml
+Sitemap: https://www.invwavelab.com/sitemap.xml
